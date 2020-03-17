@@ -7,6 +7,7 @@ module.exports = class CustomTransport extends Transport {
         super(opts);
         this.filename = opts.filename;
         this.setup();
+        this.fileCount = 1;
     }
 
     initialize() {
@@ -49,8 +50,17 @@ module.exports = class CustomTransport extends Transport {
         }
         return data;
     }
-
+    getFilesizeInBytes() {
+        const stats = fs.statSync(this.filename);
+        const fileSizeInBytes = stats.size;
+        return fileSizeInBytes;
+    }
     writeLog(info) {
+        
+        if(this.getFilesizeInBytes() > 5000){
+           // fs.renameSync(`${this.filename-this.fileCount}`, this.filename);            
+            this.initialize();
+        }
         const data = this.readLog();
         let arr = [];
         if (data) {
